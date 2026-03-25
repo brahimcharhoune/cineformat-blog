@@ -1,0 +1,30 @@
+# robots.txt for cineformatautomation.online
+# Last updated: 2025-11-01
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Explicitly allow Googlebot
+User-agent: Googlebot
+Allow: /
+
+# Explicitly allow GPTBot (OpenAI)
+User-agent: GPTBot
+Allow: /
+
+# Explicitly allow other AI crawlers
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap location
+Sitemap: https://cineformatautomation.online/sitemap.xml
