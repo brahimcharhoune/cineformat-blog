@@ -84,9 +84,29 @@
     .editor-post-label { font-size:.875rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px; }
     .editor-post-label strong { color:var(--white); }
     .editor-topbar-right { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
-    .btn-save-editor { background:var(--accent); color:#0d0d0f; border:none; border-radius:8px; padding:.45rem 1.25rem; font-weight:600; font-size:.875rem; cursor:pointer; transition:background .2s; font-family:var(--sans); }
-    .btn-save-editor:hover { background:var(--accent2); }
+    .btn-save-editor { background:var(--bg3); color:var(--muted); border:1px solid var(--border); border-radius:8px; padding:.45rem 1.25rem; font-weight:600; font-size:.875rem; cursor:pointer; transition:all .2s; font-family:var(--sans); }
+    .btn-save-editor:hover { color:var(--white); border-color:rgba(255,255,255,.25); }
+    .btn-publish { background:var(--accent); color:#0d0d0f; border:none; border-radius:8px; padding:.45rem 1.4rem; font-weight:700; font-size:.875rem; cursor:pointer; transition:background .2s,transform .15s; font-family:var(--sans); }
+    .btn-publish:hover { background:var(--accent2); transform:translateY(-1px); }
     .save-status { font-size:.78rem; color:var(--muted); }
+    .publish-banner { position:fixed; bottom:0; left:0; right:0; z-index:400; background:linear-gradient(135deg,#1a1a10 0%,#1a1500 100%); border-top:2px solid var(--accent); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; gap:1.5rem; flex-wrap:wrap; transform:translateY(100%); transition:transform .4s cubic-bezier(.34,1.2,.64,1); box-shadow:0 -8px 40px rgba(232,201,126,0.15); }
+    .publish-banner.show { transform:translateY(0); }
+    .publish-banner-left { display:flex; align-items:flex-start; gap:1rem; min-width:0; }
+    .publish-icon { font-size:1.4rem; flex-shrink:0; margin-top:.1rem; }
+    .publish-title { color:var(--white); font-weight:700; font-size:.95rem; margin-bottom:.3rem; }
+    .publish-steps { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+    .publish-step { font-size:.8rem; color:var(--muted); display:flex; align-items:center; gap:.3rem; }
+    .publish-step-num { width:17px; height:17px; border-radius:50%; background:rgba(232,201,126,.15); border:1px solid rgba(232,201,126,.3); color:var(--accent); font-size:.62rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .publish-arrow { color:var(--border); }
+    .publish-actions { display:flex; align-items:center; gap:.75rem; flex-shrink:0; }
+    .btn-publish-download { background:var(--accent); color:#0d0d0f; border:none; border-radius:8px; padding:.7rem 1.5rem; font-weight:700; font-size:.9rem; cursor:pointer; font-family:var(--sans); transition:background .2s,transform .15s; white-space:nowrap; }
+    .btn-publish-download:hover { background:var(--accent2); transform:translateY(-1px); }
+    .btn-publish-dismiss { background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:.7rem 1rem; font-size:.85rem; cursor:pointer; font-family:var(--sans); transition:all .15s; white-space:nowrap; }
+    .btn-publish-dismiss:hover { color:var(--white); border-color:rgba(255,255,255,.2); }
+    .publish-info-box { background:rgba(232,201,126,.06); border:1px solid rgba(232,201,126,.2); border-radius:10px; padding:1rem; margin-top:auto; }
+    .publish-info-box .pib-title { color:var(--accent); font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.5rem; }
+    .publish-info-box ol { padding-left:1.1rem; color:var(--muted); font-size:.8rem; line-height:1.9; margin:0; }
+    .publish-info-box .pib-note { font-size:.73rem; color:var(--muted); margin-top:.5rem; opacity:.65; border-top:1px solid var(--border); padding-top:.5rem; }
 
     /* Sidebar */
     .editor-sidebar { background:var(--bg2); border-right:1px solid var(--border); overflow-y:auto; padding:1.5rem; grid-row:2; }
@@ -227,6 +247,32 @@
     .sitemap-badge { display:inline-flex; align-items:center; gap:.4rem; background:rgba(232,201,126,.1); border:1px solid rgba(232,201,126,.2); color:var(--accent); font-size:.7rem; font-weight:600; padding:.2rem .6rem; border-radius:100px; margin-bottom:.3rem; }
     .fab-new { display:inline-flex; align-items:center; gap:.5rem; background:var(--accent); color:#0d0d0f; border:none; border-radius:10px; padding:.7rem 1.4rem; font-weight:700; font-size:.9rem; cursor:pointer; font-family:var(--sans); transition:background .2s,transform .15s; }
     .fab-new:hover { background:var(--accent2); transform:translateY(-1px); }
+
+    /* ── GitHub settings panel ── */
+    .gh-settings-panel { background:var(--bg2); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-top:2rem; }
+    .gh-status-dot { width:8px; height:8px; border-radius:50%; background:var(--border); display:inline-block; margin-right:.4rem; flex-shrink:0; }
+    .gh-status-dot.connected { background:#7ed9a5; box-shadow:0 0 6px rgba(126,217,165,.5); }
+    .gh-status-dot.error { background:#e07070; }
+    .gh-connected-box { background:rgba(126,217,165,.06); border:1px solid rgba(126,217,165,.2); border-radius:10px; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .gh-connected-info { font-size:.875rem; color:var(--muted); }
+    .gh-connected-info strong { color:#7ed9a5; display:block; margin-bottom:.15rem; }
+    .gh-token-input { font-family:monospace; letter-spacing:.05em; }
+    .btn-gh-save { background:var(--accent); color:#0d0d0f; border:none; border-radius:8px; padding:.7rem 1.5rem; font-weight:700; font-size:.875rem; cursor:pointer; font-family:var(--sans); transition:background .2s; width:100%; margin-top:.5rem; }
+    .btn-gh-save:hover { background:var(--accent2); }
+    .btn-gh-clear { background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:7px; padding:.35rem .85rem; font-size:.8rem; cursor:pointer; font-family:var(--sans); transition:all .15s; }
+    .btn-gh-clear:hover { border-color:#e07070; color:#e07070; }
+
+    /* ── Deploy status in editor topbar ── */
+    .deploy-status { font-size:.78rem; display:flex; align-items:center; gap:.4rem; }
+    .deploy-dot { width:7px; height:7px; border-radius:50%; background:var(--border); flex-shrink:0; transition:background .3s; }
+    .deploy-dot.pushing { background:var(--accent); animation:pulse 1s ease infinite; }
+    .deploy-dot.success { background:#7ed9a5; }
+    .deploy-dot.fail { background:#e07070; }
+    .deploy-label { color:var(--muted); }
+
+    /* publish banner update for GitHub mode */
+    .banner-github { background:linear-gradient(135deg,#0d1a0d 0%,#081408 100%); border-top-color:#7ed9a5; }
+    .banner-github .publish-title { color:#7ed9a5; }
   </style>
 </head>
 <body>
@@ -300,6 +346,48 @@
             Auto-includes all blog posts with correct URLs, dates &amp; priorities.
           </div>
           <button class="btn-export" onclick="exportSitemap()" style="border-color:rgba(232,201,126,.3);color:var(--accent);">⬇ Download sitemap.xml</button>
+        </div>
+      </div>
+
+      <!-- GitHub Auto-Deploy panel -->
+      <div class="gh-settings-panel">
+        <div class="panel-header">
+          <span class="panel-title">⚡ GitHub Auto-Deploy</span>
+          <span id="gh-status-badge" style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;"><span class="gh-status-dot" id="gh-dot"></span><span id="gh-status-text">Not configured</span></span>
+        </div>
+        <div class="form-body" id="gh-form-area">
+          <!-- Connected state (hidden by default) -->
+          <div id="gh-connected-view" style="display:none;">
+            <div class="gh-connected-box">
+              <div class="gh-connected-info">
+                <strong id="gh-connected-label">✓ Connected</strong>
+                <span id="gh-connected-repo"></span>
+              </div>
+              <button class="btn-gh-clear" onclick="ghClear()">Disconnect</button>
+            </div>
+            <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">Every "Save &amp; Publish" will now push directly to GitHub. Netlify will deploy automatically.</p>
+          </div>
+          <!-- Setup form (shown by default) -->
+          <div id="gh-setup-view">
+            <div class="form-group">
+              <label class="form-label" for="gh-owner">GitHub Username *</label>
+              <input class="form-input" id="gh-owner" type="text" placeholder="e.g. Brahim" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="gh-repo">Repository Name *</label>
+              <input class="form-input" id="gh-repo" type="text" placeholder="e.g. cineformat-site" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="gh-branch">Branch</label>
+              <input class="form-input" id="gh-branch" type="text" placeholder="main" value="main" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="gh-token">Personal Access Token *</label>
+              <input class="form-input gh-token-input" id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+              <p class="form-hint">Needs <strong style="color:var(--white);">Contents: Read &amp; Write</strong> permission. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent);">Create token →</a></p>
+            </div>
+            <button class="btn-gh-save" onclick="ghSave()">Connect GitHub</button>
+          </div>
         </div>
       </div>
     </div>
@@ -438,8 +526,12 @@
     </div>
     <div class="editor-topbar-right">
       <span class="save-status" id="save-status"></span>
-      <button class="btn-save-editor" onclick="saveContent()">Save</button>
-      <button class="btn-export" onclick="downloadHtml()" style="font-size:.8rem;padding:.4rem 1rem;">⬇ .html</button>
+      <div class="deploy-status" id="deploy-status" style="display:none;">
+        <span class="deploy-dot" id="deploy-dot"></span>
+        <span class="deploy-label" id="deploy-label"></span>
+      </div>
+      <button class="btn-save-editor" onclick="saveContent()" title="Save to browser storage only">Save draft</button>
+      <button class="btn-publish" id="btn-publish-main" onclick="saveAndPublish()" title="Save + push to GitHub → Netlify deploys automatically">⬇ Save &amp; Publish</button>
     </div>
   </div>
 
@@ -480,6 +572,17 @@
       <ul class="structure-list" id="outline-list">
         <li class="struct-item" style="font-size:.8rem;cursor:default;">— headings appear here —</li>
       </ul>
+    </div>
+
+    <div class="publish-info-box" id="sidebar-publish-info">
+      <div class="pib-title" id="pib-title-text">⚡ How to publish</div>
+      <ol id="pib-steps">
+        <li>Edit your content here</li>
+        <li>Click <strong style="color:var(--accent);">Save &amp; Publish</strong></li>
+        <li id="pib-step3">File pushes to GitHub automatically</li>
+        <li id="pib-step4">Netlify deploys — live in ~30s ✓</li>
+      </ol>
+      <p class="pib-note" id="pib-note">GitHub connected — fully automatic.</p>
     </div>
   </div>
 
@@ -596,6 +699,28 @@
   <button class="toolbar-btn" onclick="tableAction('del-table')" title="Delete table"  style="color:#e07070;font-size:.75rem;">x Table</button>
 </div>
 
+<!-- Publish banner -->
+<div class="publish-banner" id="publish-banner">
+  <div class="publish-banner-left">
+    <div class="publish-icon">📤</div>
+    <div>
+      <div class="publish-title">Changes saved — now upload to your server to go live</div>
+      <div class="publish-steps">
+        <span class="publish-step"><span class="publish-step-num">1</span> Download the .html file below</span>
+        <span class="publish-arrow">→</span>
+        <span class="publish-step"><span class="publish-step-num">2</span> Upload it to your server / GitHub repo</span>
+        <span class="publish-arrow">→</span>
+        <span class="publish-step"><span class="publish-step-num">3</span> Changes are live ✓</span>
+      </div>
+      <div style="margin-top:.5rem;font-size:.78rem;color:var(--accent);">💡 Connect GitHub below to skip this step forever — changes will push automatically.</div>
+    </div>
+  </div>
+  <div class="publish-actions">
+    <button class="btn-publish-download" onclick="downloadHtml(); dismissBanner();">⬇ Download .html</button>
+    <button class="btn-publish-dismiss" onclick="dismissBanner()">Got it</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <script src="site.js"></script>
 <script>
@@ -620,6 +745,7 @@ async function load(){
   try{ const r=await window.storage.get('cf-posts-v3'); posts=r?JSON.parse(r.value):DEFAULTS.map(p=>({...p})); }
   catch{ posts=DEFAULTS.map(p=>({...p})); }
   render();
+  ghRenderStatus();
 }
 async function save(){ try{ await window.storage.set('cf-posts-v3',JSON.stringify(posts)); }catch(e){console.error(e);} }
 
@@ -800,11 +926,13 @@ async function openEditor(id){
 
   cv.contentEditable='true';
   dirty=false; setStatus('saved'); countWords(); buildOutline();
+  ghRenderStatus();
   cv.focus();
 }
 
 function leaveEditor(){
   if(dirty&&!confirm('Unsaved changes — leave anyway?')) return;
+  dismissBanner();
   currentId=null; showView('view-dashboard'); render();
 }
 
@@ -824,7 +952,189 @@ function saveContent(){
   if(newSlug)  posts[i].slug=newSlug;
   posts[i].cat=document.getElementById("em-cat").value;
   document.getElementById("editor-post-title").textContent=posts[i].title;
-  save(); dirty=false; setStatus("saved"); toast("✓ Post saved.");
+  save(); dirty=false; setStatus("saved");
+  // Show publish banner to remind user they must upload the file
+  showPublishBanner();
+}
+
+/* ════════════════════════════════
+   GITHUB SETTINGS
+════════════════════════════════ */
+const GH_KEY = 'cf-github-config';
+
+function ghLoad(){
+  try{
+    const r = localStorage.getItem(GH_KEY);
+    return r ? JSON.parse(r) : null;
+  } catch{ return null; }
+}
+
+function ghSave(){
+  const owner  = document.getElementById('gh-owner').value.trim();
+  const repo   = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  const token  = document.getElementById('gh-token').value.trim();
+  if(!owner||!repo||!token){ toast('Fill in all GitHub fields.',true); return; }
+  const cfg = { owner, repo, branch, token };
+  try{ localStorage.setItem(GH_KEY, JSON.stringify(cfg)); } catch(e){ toast('Could not save settings.',true); return; }
+  ghRenderStatus();
+  toast('✓ GitHub connected — '+owner+'/'+repo);
+}
+
+function ghClear(){
+  try{ localStorage.removeItem(GH_KEY); } catch{}
+  document.getElementById('gh-owner').value='';
+  document.getElementById('gh-repo').value='';
+  document.getElementById('gh-branch').value='main';
+  document.getElementById('gh-token').value='';
+  ghRenderStatus();
+  toast('GitHub disconnected.');
+}
+
+function ghRenderStatus(){
+  const cfg = ghLoad();
+  const dot  = document.getElementById('gh-dot');
+  const txt  = document.getElementById('gh-status-text');
+  const setupView    = document.getElementById('gh-setup-view');
+  const connectedView= document.getElementById('gh-connected-view');
+  const btnPublish   = document.getElementById('btn-publish-main');
+
+  if(cfg){
+    dot.className = 'gh-status-dot connected';
+    txt.textContent = cfg.owner+'/'+cfg.repo;
+    setupView.style.display    = 'none';
+    connectedView.style.display= 'block';
+    document.getElementById('gh-connected-repo').textContent = cfg.owner+'/'+cfg.repo+' → /public/ ('+cfg.branch+')';
+    if(btnPublish){ btnPublish.textContent='🚀 Save & Publish'; btnPublish.title='Push to GitHub → Netlify deploys automatically'; }
+    // Update sidebar info box
+    const s3=document.getElementById('pib-step3'); if(s3) s3.innerHTML='File pushes to <strong style="color:#7ed9a5;">GitHub</strong> automatically';
+    const s4=document.getElementById('pib-step4'); if(s4) s4.style.display='list-item';
+    const pn=document.getElementById('pib-note'); if(pn){ pn.textContent='GitHub connected — fully automatic.'; pn.style.color='#7ed9a5'; }
+  } else {
+    dot.className = 'gh-status-dot';
+    txt.textContent = 'Not configured';
+    setupView.style.display    = 'block';
+    connectedView.style.display= 'none';
+    if(btnPublish){ btnPublish.textContent='⬇ Save & Download'; btnPublish.title='Save + download the .html file to upload to your server'; }
+    // Update sidebar info box
+    const s3=document.getElementById('pib-step3'); if(s3) s3.innerHTML='Download the .html file';
+    const s4=document.getElementById('pib-step4'); if(s4) s4.innerHTML='Upload to your server to go live';
+    const pn=document.getElementById('pib-note'); if(pn){ pn.textContent='Connect GitHub below to make this automatic.'; pn.style.color=''; }
+  }
+}
+
+/* ── Build the full HTML string for a post (shared by download + GitHub push) ── */
+function buildPostHtml(){
+  if(!currentId) return null;
+  const p = posts.find(x=>x.id===currentId); if(!p) return null;
+  const title = document.getElementById('em-title').value.trim()||p.title;
+  const desc  = document.getElementById('em-desc').value.trim() ||p.desc;
+  const slug  = (document.getElementById('em-slug').value.trim()||p.slug).replace('.html','');
+  const cat   = document.getElementById('em-cat').value;
+  const body  = document.getElementById('canvas').innerHTML;
+  return {
+    html: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${esc(title)} — CineFormat AI</title>\n  <meta name="description" content="${esc(desc)}" />\n  <link rel="canonical" href="https://cineformatautomation.online/${slug}" />\n  <link rel="stylesheet" href="style.css" />\n</head>\n<body>\n<div class="page-wrapper">\n  <div class="inner-page">\n    <a class="back-link" href="blog.html">← Back to Blog</a>\n    <div class="blog-cat" style="display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:1rem;">${esc(cat)}</div>\n    <h1>${esc(title)}</h1>\n    <p class="intro-lead">${esc(desc)}</p>\n    ${body}\n  </div>\n</div>\n<script src="site.js"><\/script>\n</body>\n</html>`,
+    filename: p.slug || slug+'.html'
+  };
+}
+
+/* ── Push a single file to GitHub via API ── */
+async function ghPushFile(cfg, path, content, commitMsg){
+  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
+  const headers = {
+    'Authorization': 'Bearer '+cfg.token,
+    'Content-Type': 'application/json',
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  // Get current SHA (needed for update)
+  let sha = null;
+  try{
+    const r = await fetch(url, { headers });
+    if(r.ok){ const d = await r.json(); sha = d.sha; }
+  } catch{}
+
+  const body = { message: commitMsg, content: btoa(unescape(encodeURIComponent(content))), branch: cfg.branch };
+  if(sha) body.sha = sha;
+
+  const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.message || 'GitHub API error '+res.status);
+  }
+  return await res.json();
+}
+
+/* ── Set deploy status indicator ── */
+function setDeployStatus(state, msg){
+  const wrap = document.getElementById('deploy-status');
+  const dot  = document.getElementById('deploy-dot');
+  const lbl  = document.getElementById('deploy-label');
+  wrap.style.display = state ? 'flex' : 'none';
+  dot.className = 'deploy-dot'+(state?' '+state:'');
+  lbl.textContent = msg||'';
+}
+
+/* ── Main: save + push OR save + download depending on config ── */
+async function saveAndPublish(){
+  saveContent();
+  const cfg = ghLoad();
+
+  if(!cfg){
+    // No GitHub configured — fall back to download
+    setTimeout(()=>{ downloadHtml(); }, 150);
+    return;
+  }
+
+  // GitHub mode
+  const built = buildPostHtml(); if(!built) return;
+  const { html, filename } = built;
+  const path = 'public/'+filename;
+
+  // Disable publish button while pushing
+  const btn = document.getElementById('btn-publish-main');
+  const origText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Pushing…';
+  setDeployStatus('pushing','Pushing to GitHub…');
+  dismissBanner();
+
+  try{
+    await ghPushFile(cfg, path, html, 'Update '+filename+' via CineFormat Admin');
+
+    // Also push blog.html if it changed
+    try{
+      const blogHtml = buildBlogHtml();
+      await ghPushFile(cfg, 'public/blog.html', blogHtml, 'Update blog.html via CineFormat Admin');
+    } catch(e){ console.warn('blog.html push skipped:', e); }
+
+    setDeployStatus('success','Pushed! Netlify deploying…');
+    toast('🚀 Pushed to GitHub — Netlify is deploying!');
+    setTimeout(()=>setDeployStatus(null,''), 6000);
+  } catch(e){
+    setDeployStatus('fail','Push failed');
+    toast('GitHub push failed: '+e.message, true);
+    // Offer download as fallback
+    setTimeout(()=>{ if(confirm('Push failed. Download the file instead?')) downloadHtml(); }, 300);
+  } finally{
+    btn.disabled = false; btn.textContent = origText;
+  }
+}
+
+/* ── Build blog.html string (for auto-push) ── */
+function buildBlogHtml(){
+  const cards = posts.map(p=>`      <a class="blog-card" href="${p.slug}">\n        <div class="blog-cat">${p.cat}</div>\n        <h3>${esc(p.title)}</h3>\n        <p>${esc(p.desc)}</p>\n      </a>`).join('\n');
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Blog — CineFormat AI</title>\n  <meta name="description" content="Guides, tutorials, and resources for screenwriters working in Google Docs." />\n  <link rel="canonical" href="https://cineformatautomation.online/blog" />\n  <link rel="stylesheet" href="style.css" />\n</head>\n<body>\n<div class="page-wrapper">\n  <div class="inner-page" style="max-width:1000px;">\n    <a class="back-link" href="index.html">← Back to Home</a>\n    <h1>CineFormat AI Blog</h1>\n    <p class="intro-lead">Guides, tips, and resources for screenwriters working in Google Docs.</p>\n    <div class="blog-grid">\n${cards}\n    </div>\n  </div>\n</div>\n<script src="site.js"><\/script>\n</body>\n</html>`;
+}
+
+function showPublishBanner(){
+  const cfg = ghLoad();
+  if(cfg) return; // GitHub connected — no need to show manual upload banner
+  document.getElementById('publish-banner').classList.add('show');
+}
+
+function dismissBanner(){
+  document.getElementById('publish-banner').classList.remove('show');
 }
 
 /* toolbar */
@@ -901,21 +1211,15 @@ function setStatus(s){
 document.getElementById('canvas').addEventListener('input',markDirty);
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='s'&&document.getElementById('view-editor').classList.contains('active')){
-    e.preventDefault(); saveContent();
+    e.preventDefault(); saveAndPublish();
   }
 });
 
 /* download .html file */
 function downloadHtml(){
-  if(!currentId) return;
-  const p=posts.find(x=>x.id===currentId); if(!p) return;
-  const title=document.getElementById('em-title').value.trim()||p.title;
-  const desc =document.getElementById('em-desc').value.trim() ||p.desc;
-  const slug =(document.getElementById('em-slug').value.trim()||p.slug).replace('.html','');
-  const cat  =document.getElementById('em-cat').value;
-  const body =document.getElementById('canvas').innerHTML;
-  const html=`<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${esc(title)} — CineFormat AI</title>\n  <meta name="description" content="${esc(desc)}" />\n  <link rel="canonical" href="https://cineformatautomation.online/${slug}" />\n  <link rel="stylesheet" href="style.css" />\n</head>\n<body>\n<div class="page-wrapper">\n  <div class="inner-page">\n    <a class="back-link" href="blog.html">← Back to Blog</a>\n    <div class="blog-cat" style="display:inline-block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:1rem;">${esc(cat)}</div>\n    <h1>${esc(title)}</h1>\n    <p class="intro-lead">${esc(desc)}</p>\n    ${body}\n  </div>\n</div>\n<script src="site.js"><\/script>\n</body>\n</html>`;
-  dl(html,p.slug||`${slug}.html`); toast('File downloaded.');
+  const built = buildPostHtml(); if(!built) return;
+  dl(built.html, built.filename);
+  toast('File downloaded.');
 }
 
 
@@ -1363,6 +1667,27 @@ function doLogout(){
 
 // Enter key on login form
 ["l-user","l-pass"].forEach(id=>document.getElementById(id).addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); }));
+
+// Pre-bake GitHub credentials (set once, never overwrite if user changes them)
+(function(){
+  const GH_PRESET = {
+    owner:  'brahimcharhoune',
+    repo:   'cineformat-blog',
+    branch: 'main',
+    token:  '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'
+  };
+  try{
+    if(!localStorage.getItem('cf-github-config')){
+      localStorage.setItem('cf-github-config', JSON.stringify(GH_PRESET));
+    }
+    // Also pre-fill the form inputs in case user opens the settings panel
+    const existing = JSON.parse(localStorage.getItem('cf-github-config'));
+    document.getElementById('gh-owner').value  = existing.owner  || '';
+    document.getElementById('gh-repo').value   = existing.repo   || '';
+    document.getElementById('gh-branch').value = existing.branch || 'main';
+    document.getElementById('gh-token').value  = existing.token  || '';
+  } catch(e){ console.warn('GH preset error:', e); }
+})();
 
 // Boot — check session first
 if(checkSession()){ load(); showView("view-dashboard"); } else { showView("view-login"); document.getElementById("l-user").focus(); }
