@@ -1083,7 +1083,7 @@ async function saveAndPublish(){
   // GitHub mode
   const built = buildPostHtml(); if(!built) return;
   const { html, filename } = built;
-  const path = 'public/'+filename;
+  const path = filename; // files live at repo root, not in public/
 
   // Disable publish button while pushing
   const btn = document.getElementById('btn-publish-main');
@@ -1098,7 +1098,7 @@ async function saveAndPublish(){
     // Also push blog.html if it changed
     try{
       const blogHtml = buildBlogHtml();
-      await ghPushFile(cfg, 'public/blog.html', blogHtml, 'Update blog.html via CineFormat Admin');
+      await ghPushFile(cfg, 'blog.html', blogHtml, 'Update blog.html via CineFormat Admin');
     } catch(e){ console.warn('blog.html push skipped:', e); }
 
     setDeployStatus('success','Pushed! Netlify deploying…');
