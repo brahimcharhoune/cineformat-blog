@@ -369,6 +369,10 @@
           </div>
           <!-- Setup form (shown by default) -->
           <div id="gh-setup-view">
+            <div style="background:rgba(126,217,165,0.07);border:1px solid rgba(126,217,165,0.25);border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.8rem;color:#7ed9a5;">
+              🔒 <strong>Token secured server-side.</strong><br>
+              <span style="color:var(--muted);margin-top:.3rem;display:block;">Your <code style="background:var(--bg3);padding:.1rem .3rem;border-radius:4px;color:#7ed9a5;">BLOG_TOKEN</code> lives in Netlify as an environment variable and is never exposed to the browser. No token entry needed here.</span>
+            </div>
             <div class="form-group">
               <label class="form-label" for="gh-owner">GitHub Username *</label>
               <input class="form-input" id="gh-owner" type="text" placeholder="e.g. Brahim" />
@@ -380,11 +384,6 @@
             <div class="form-group">
               <label class="form-label" for="gh-branch">Branch</label>
               <input class="form-input" id="gh-branch" type="text" placeholder="main" value="main" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="gh-token">Personal Access Token *</label>
-              <input class="form-input gh-token-input" id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
-              <p class="form-hint">Needs <strong style="color:var(--white);">Contents: Read &amp; Write</strong> permission. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent);">Create token →</a></p>
             </div>
             <button class="btn-gh-save" onclick="ghSave()">Connect GitHub</button>
           </div>
@@ -973,9 +972,9 @@ function ghSave(){
   const owner  = document.getElementById('gh-owner').value.trim();
   const repo   = document.getElementById('gh-repo').value.trim();
   const branch = document.getElementById('gh-branch').value.trim() || 'main';
-  const token  = document.getElementById('gh-token').value.trim();
-  if(!owner||!repo||!token){ toast('Fill in all GitHub fields.',true); return; }
-  const cfg = { owner, repo, branch, token };
+  if(!owner||!repo){ toast('Fill in GitHub username and repo.',true); return; }
+  // Token is NOT stored in the browser — it lives in Netlify env as BLOG_TOKEN
+  const cfg = { owner, repo, branch };
   try{ localStorage.setItem(GH_KEY, JSON.stringify(cfg)); } catch(e){ toast('Could not save settings.',true); return; }
   ghRenderStatus();
   toast('✓ GitHub connected — '+owner+'/'+repo);
@@ -986,7 +985,6 @@ function ghClear(){
   document.getElementById('gh-owner').value='';
   document.getElementById('gh-repo').value='';
   document.getElementById('gh-branch').value='main';
-  document.getElementById('gh-token').value='';
   ghRenderStatus();
   toast('GitHub disconnected.');
 }
@@ -1038,32 +1036,27 @@ function buildPostHtml(){
   };
 }
 
-/* ── Push a single file to GitHub via API ── */
+/* ── Push a single file via Netlify Function (token stays server-side) ── */
 async function ghPushFile(cfg, path, content, commitMsg){
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-  const headers = {
-    'Authorization': 'Bearer '+cfg.token,
-    'Content-Type': 'application/json',
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
-
-  // Get current SHA (needed for update)
-  let sha = null;
-  try{
-    const r = await fetch(url, { headers });
-    if(r.ok){ const d = await r.json(); sha = d.sha; }
-  } catch{}
-
-  const body = { message: commitMsg, content: btoa(unescape(encodeURIComponent(content))), branch: cfg.branch };
-  if(sha) body.sha = sha;
-
-  const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
+  // All pushes go through /.netlify/functions/gh-push
+  // The BLOG_TOKEN env variable is read there — never touches the browser
+  const res = await fetch('/.netlify/functions/gh-push', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      owner:   cfg.owner,
+      repo:    cfg.repo,
+      branch:  cfg.branch,
+      path:    path,
+      content: btoa(unescape(encodeURIComponent(content))),
+      message: commitMsg
+    })
+  });
+  const data = await res.json().catch(()=>({}));
   if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error(err.message || 'GitHub API error '+res.status);
+    throw new Error(data.error || 'Push failed — '+res.status);
   }
-  return await res.json();
+  return data;
 }
 
 /* ── Set deploy status indicator ── */
@@ -1685,7 +1678,7 @@ function doLogout(){
     document.getElementById('gh-owner').value  = existing.owner  || '';
     document.getElementById('gh-repo').value   = existing.repo   || '';
     document.getElementById('gh-branch').value = existing.branch || 'main';
-    document.getElementById('gh-token').value  = existing.token  || '';
+    // Token is NOT stored in the browser — lives in Netlify env as BLOG_TOKEN
   } catch(e){ console.warn('GH preset error:', e); }
 })();
 
