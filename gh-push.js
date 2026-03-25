@@ -72,7 +72,11 @@ exports.handler = async function (event) {
   if (!putRes.ok) {
     return {
       statusCode: putRes.status,
-      body: JSON.stringify({ error: result.message || 'GitHub API error ' + putRes.status })
+      body: JSON.stringify({
+        error: result.message || 'GitHub API error ' + putRes.status,
+        detail: `PUT ${apiUrl} → ${putRes.status}`,
+        github: result
+      })
     };
   }
 
