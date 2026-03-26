@@ -353,40 +353,32 @@
       <div class="gh-settings-panel">
         <div class="panel-header">
           <span class="panel-title">⚡ GitHub Auto-Deploy</span>
-          <span id="gh-status-badge" style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;"><span class="gh-status-dot" id="gh-dot"></span><span id="gh-status-text">Not configured</span></span>
+          <span id="gh-status-badge" style="font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;"><span class="gh-status-dot" id="gh-dot"></span><span id="gh-status-text">Token required</span></span>
         </div>
         <div class="form-body" id="gh-form-area">
-          <!-- Connected state (hidden by default) -->
+          <!-- Connected state -->
           <div id="gh-connected-view" style="display:none;">
             <div class="gh-connected-box">
               <div class="gh-connected-info">
-                <strong id="gh-connected-label">✓ Connected</strong>
+                <strong id="gh-connected-label">✓ Ready to publish</strong>
                 <span id="gh-connected-repo"></span>
               </div>
-              <button class="btn-gh-clear" onclick="ghClear()">Disconnect</button>
+              <button class="btn-gh-clear" onclick="ghClear()">Clear token</button>
             </div>
-            <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">Every "Save &amp; Publish" will now push directly to GitHub. Netlify will deploy automatically.</p>
+            <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">Token stored in <strong style="color:var(--white);">sessionStorage only</strong> — erased when you close this tab. Never saved to any file.</p>
           </div>
-          <!-- Setup form (shown by default) -->
+          <!-- Token entry form -->
           <div id="gh-setup-view">
-            <div class="form-group">
-              <label class="form-label" for="gh-owner">GitHub Username *</label>
-              <input class="form-input" id="gh-owner" type="text" placeholder="e.g. Brahim" />
+            <div style="background:rgba(126,217,165,.06);border:1px solid rgba(126,217,165,.2);border-radius:8px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.8rem;color:var(--muted);line-height:1.7;">
+              🔐 <strong style="color:#7ed9a5;">Your token is never saved to any file.</strong><br>
+              It lives in <code style="color:var(--accent);">sessionStorage</code> only — gone the moment you close the tab.
             </div>
             <div class="form-group">
-              <label class="form-label" for="gh-repo">Repository Name *</label>
-              <input class="form-input" id="gh-repo" type="text" placeholder="e.g. cineformat-site" />
+              <label class="form-label" for="gh-token-input">GitHub Personal Access Token</label>
+              <input class="form-input" id="gh-token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+              <p class="form-hint">Needs <strong style="color:var(--white);">Contents: Read &amp; Write</strong> on <code>cineformat-blog</code>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent);">Create token →</a></p>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="gh-branch">Branch</label>
-              <input class="form-input" id="gh-branch" type="text" placeholder="main" value="main" />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="gh-token">Personal Access Token *</label>
-              <input class="form-input gh-token-input" id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
-              <p class="form-hint">Needs <strong style="color:var(--white);">Contents: Read &amp; Write</strong> permission. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent);">Create token →</a></p>
-            </div>
-            <button class="btn-gh-save" onclick="ghSave()">Connect GitHub</button>
+            <button class="btn-gh-save" onclick="ghSave()">Connect</button>
           </div>
         </div>
       </div>
@@ -959,67 +951,65 @@ function saveContent(){
 
 /* ════════════════════════════════
    GITHUB SETTINGS
+   Token stored in sessionStorage only — cleared on tab close.
+   Never written to localStorage, never hardcoded in any file.
 ════════════════════════════════ */
-const GH_KEY = 'cf-github-config';
+const GH_OWNER  = 'brahimcharhoune';
+const GH_REPO   = 'cineformat-blog';
+const GH_BRANCH = 'main';
+const GH_PATH   = 'public/';
+const GH_TOKEN_KEY = 'cf-gh-token'; // sessionStorage key
 
 function ghLoad(){
   try{
-    const r = localStorage.getItem(GH_KEY);
-    return r ? JSON.parse(r) : null;
+    const t = sessionStorage.getItem(GH_TOKEN_KEY);
+    if(!t) return null;
+    return { owner: GH_OWNER, repo: GH_REPO, branch: GH_BRANCH, token: t };
   } catch{ return null; }
 }
 
 function ghSave(){
-  const owner  = document.getElementById('gh-owner').value.trim();
-  const repo   = document.getElementById('gh-repo').value.trim();
-  const branch = document.getElementById('gh-branch').value.trim() || 'main';
-  const token  = document.getElementById('gh-token').value.trim();
-  if(!owner||!repo||!token){ toast('Fill in all GitHub fields.',true); return; }
-  const cfg = { owner, repo, branch, token };
-  try{ localStorage.setItem(GH_KEY, JSON.stringify(cfg)); } catch(e){ toast('Could not save settings.',true); return; }
+  const token = document.getElementById('gh-token-input').value.trim();
+  if(!token){ toast('Enter your GitHub token.',true); return; }
+  try{ sessionStorage.setItem(GH_TOKEN_KEY, token); } catch(e){ toast('Could not store token.',true); return; }
   ghRenderStatus();
-  toast('✓ GitHub connected — '+owner+'/'+repo);
+  toast('✓ Token saved for this session — ready to publish.');
 }
 
 function ghClear(){
-  try{ localStorage.removeItem(GH_KEY); } catch{}
-  document.getElementById('gh-owner').value='';
-  document.getElementById('gh-repo').value='';
-  document.getElementById('gh-branch').value='main';
-  document.getElementById('gh-token').value='';
+  try{ sessionStorage.removeItem(GH_TOKEN_KEY); } catch{}
+  document.getElementById('gh-token-input').value='';
   ghRenderStatus();
-  toast('GitHub disconnected.');
+  toast('Token cleared.');
 }
 
 function ghRenderStatus(){
-  const cfg = ghLoad();
+  const cfg  = ghLoad();
   const dot  = document.getElementById('gh-dot');
   const txt  = document.getElementById('gh-status-text');
-  const setupView    = document.getElementById('gh-setup-view');
-  const connectedView= document.getElementById('gh-connected-view');
-  const btnPublish   = document.getElementById('btn-publish-main');
+  const setupView     = document.getElementById('gh-setup-view');
+  const connectedView = document.getElementById('gh-connected-view');
+  const btnPublish    = document.getElementById('btn-publish-main');
 
   if(cfg){
     dot.className = 'gh-status-dot connected';
-    txt.textContent = cfg.owner+'/'+cfg.repo;
-    setupView.style.display    = 'none';
-    connectedView.style.display= 'block';
-    document.getElementById('gh-connected-repo').textContent = cfg.owner+'/'+cfg.repo+' → /public/ ('+cfg.branch+')';
-    if(btnPublish){ btnPublish.textContent='🚀 Save & Publish'; btnPublish.title='Push to GitHub → Netlify deploys automatically'; }
-    // Update sidebar info box
+    txt.textContent = GH_OWNER+'/'+GH_REPO;
+    setupView.style.display     = 'none';
+    connectedView.style.display = 'block';
+    document.getElementById('gh-connected-repo').textContent = GH_OWNER+'/'+GH_REPO+' → /public/ ('+GH_BRANCH+')';
+    if(btnPublish){ btnPublish.textContent='🚀 Save & Publish'; btnPublish.title='Pushes directly to GitHub Pages'; }
     const s3=document.getElementById('pib-step3'); if(s3) s3.innerHTML='File pushes to <strong style="color:#7ed9a5;">GitHub</strong> automatically';
     const s4=document.getElementById('pib-step4'); if(s4) s4.style.display='list-item';
     const pn=document.getElementById('pib-note'); if(pn){ pn.textContent='GitHub connected — fully automatic.'; pn.style.color='#7ed9a5'; }
   } else {
     dot.className = 'gh-status-dot';
-    txt.textContent = 'Not configured';
-    setupView.style.display    = 'block';
-    connectedView.style.display= 'none';
-    if(btnPublish){ btnPublish.textContent='⬇ Save & Download'; btnPublish.title='Save + download the .html file to upload to your server'; }
-    // Update sidebar info box
+    txt.textContent = 'Token required';
+    setupView.style.display     = 'block';
+    connectedView.style.display = 'none';
+    if(btnPublish){ btnPublish.textContent='⬇ Save & Download'; btnPublish.title='Save + download .html to upload manually'; }
     const s3=document.getElementById('pib-step3'); if(s3) s3.innerHTML='Download the .html file';
     const s4=document.getElementById('pib-step4'); if(s4) s4.innerHTML='Upload to your server to go live';
-    const pn=document.getElementById('pib-note'); if(pn){ pn.textContent='Connect GitHub below to make this automatic.'; pn.style.color=''; }
+    const pn=document.getElementById('pib-note'); if(pn){ pn.textContent='Enter your GitHub token above to make this automatic.'; pn.style.color=''; }
   }
 }
 
@@ -1038,34 +1028,6 @@ function buildPostHtml(){
   };
 }
 
-/* ── Push a single file to GitHub via API ── */
-async function ghPushFile(cfg, path, content, commitMsg){
-  const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`;
-  const headers = {
-    'Authorization': 'Bearer '+cfg.token,
-    'Content-Type': 'application/json',
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
-
-  // Get current SHA (needed for update)
-  let sha = null;
-  try{
-    const r = await fetch(url, { headers });
-    if(r.ok){ const d = await r.json(); sha = d.sha; }
-  } catch{}
-
-  const body = { message: commitMsg, content: btoa(unescape(encodeURIComponent(content))), branch: cfg.branch };
-  if(sha) body.sha = sha;
-
-  const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error(err.message || 'GitHub API error '+res.status);
-  }
-  return await res.json();
-}
-
 /* ── Set deploy status indicator ── */
 function setDeployStatus(state, msg){
   const wrap = document.getElementById('deploy-status');
@@ -1076,46 +1038,74 @@ function setDeployStatus(state, msg){
   lbl.textContent = msg||'';
 }
 
-/* ── Main: save + push OR save + download depending on config ── */
+/* ── Push a file directly to GitHub via Contents API ──
+   Token is read from sessionStorage — entered once per session
+   by the user, never hardcoded anywhere.
+── */
+async function ghPushFile(token, path, fileContent, commitMsg){
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
+  const headers = {
+    'Authorization': 'Bearer '+token,
+    'Content-Type':  'application/json',
+    'Accept':        'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+  // Get current SHA (required to update existing file)
+  let sha = null;
+  try{
+    const r = await fetch(url, { headers });
+    if(r.ok){ const d = await r.json(); sha = d.sha; }
+  } catch{}
+  const body = {
+    message: commitMsg,
+    content: btoa(unescape(encodeURIComponent(fileContent))),
+    branch:  GH_BRANCH
+  };
+  if(sha) body.sha = sha;
+  const res = await fetch(url, { method:'PUT', headers, body: JSON.stringify(body) });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.message || 'GitHub API error '+res.status);
+  }
+  return res.json();
+}
+
 async function saveAndPublish(){
   saveContent();
   const cfg = ghLoad();
 
+  // No token in session — fall back to download
   if(!cfg){
-    // No GitHub configured — fall back to download
     setTimeout(()=>{ downloadHtml(); }, 150);
     return;
   }
 
-  // GitHub mode
   const built = buildPostHtml(); if(!built) return;
   const { html, filename } = built;
-  const path = 'public/'+filename;
+  const blogHtml = buildBlogHtml();
 
-  // Disable publish button while pushing
   const btn = document.getElementById('btn-publish-main');
   const origText = btn.textContent;
   btn.disabled = true; btn.textContent = 'Pushing…';
-  setDeployStatus('pushing','Pushing to GitHub…');
+  setDeployStatus('pushing', 'Pushing to GitHub…');
   dismissBanner();
 
   try{
-    await ghPushFile(cfg, path, html, 'Update '+filename+' via CineFormat Admin');
+    // Push blog post file
+    await ghPushFile(cfg.token, GH_PATH+filename, html,
+      'Update '+filename+' via CineFormat Admin');
 
-    // Also push blog.html if it changed
-    try{
-      const blogHtml = buildBlogHtml();
-      await ghPushFile(cfg, 'public/blog.html', blogHtml, 'Update blog.html via CineFormat Admin');
-    } catch(e){ console.warn('blog.html push skipped:', e); }
+    // Push updated blog.html
+    await ghPushFile(cfg.token, GH_PATH+'blog.html', blogHtml,
+      'Update blog.html via CineFormat Admin');
 
-    setDeployStatus('success','Pushed! Netlify deploying…');
-    toast('🚀 Pushed to GitHub — Netlify is deploying!');
-    setTimeout(()=>setDeployStatus(null,''), 6000);
+    setDeployStatus('success', 'Pushed! GitHub Pages deploying…');
+    toast('🚀 Pushed to GitHub — site will update in ~1 minute.');
+    setTimeout(()=>setDeployStatus(null,''), 8000);
   } catch(e){
-    setDeployStatus('fail','Push failed');
-    toast('GitHub push failed: '+e.message, true);
-    // Offer download as fallback
-    setTimeout(()=>{ if(confirm('Push failed. Download the file instead?')) downloadHtml(); }, 300);
+    setDeployStatus('fail', 'Push failed');
+    toast('Push failed: '+e.message, true);
+    setTimeout(()=>{ if(confirm('Push failed. Download the file instead?')) downloadHtml(); }, 400);
   } finally{
     btn.disabled = false; btn.textContent = origText;
   }
@@ -1668,25 +1658,12 @@ function doLogout(){
 // Enter key on login form
 ["l-user","l-pass"].forEach(id=>document.getElementById(id).addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); }));
 
-// Pre-bake GitHub credentials (set once, never overwrite if user changes them)
+// Restore GitHub token field if session still has it
 (function(){
-  const GH_PRESET = {
-    owner:  'brahimcharhoune',
-    repo:   'cineformat-blog',
-    branch: 'main',
-    token:  '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'
-  };
   try{
-    if(!localStorage.getItem('cf-github-config')){
-      localStorage.setItem('cf-github-config', JSON.stringify(GH_PRESET));
-    }
-    // Also pre-fill the form inputs in case user opens the settings panel
-    const existing = JSON.parse(localStorage.getItem('cf-github-config'));
-    document.getElementById('gh-owner').value  = existing.owner  || '';
-    document.getElementById('gh-repo').value   = existing.repo   || '';
-    document.getElementById('gh-branch').value = existing.branch || 'main';
-    document.getElementById('gh-token').value  = existing.token  || '';
-  } catch(e){ console.warn('GH preset error:', e); }
+    const t = sessionStorage.getItem('cf-gh-token');
+    if(t) document.getElementById('gh-token-input').value = t;
+  } catch(e){}
 })();
 
 // Boot — check session first
