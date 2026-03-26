@@ -736,6 +736,31 @@ const DEFAULTS = [
 
 let posts=[], searchQ='', pendingDelId=null, currentId=null, dirty=false, savedRange=null;
 
+/* ── Cursor position helpers ──
+   Save cursor every time user interacts with canvas.
+   Restore before any sidebar-triggered insert so content
+   lands at the cursor, not at the top of the document.
+── */
+let editorCursorRange = null;
+
+function saveCursor(){
+  const sel = window.getSelection();
+  const cv  = document.getElementById('canvas');
+  if(sel && sel.rangeCount && cv && cv.contains(sel.getRangeAt(0).commonAncestorContainer)){
+    editorCursorRange = sel.getRangeAt(0).cloneRange();
+  }
+}
+
+function restoreCursor(){
+  const cv = document.getElementById('canvas');
+  cv.focus();
+  if(editorCursorRange){
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(editorCursorRange);
+  }
+}
+
 /* ── Storage ── */
 function load(){
   try{
@@ -1139,8 +1164,8 @@ function dismissBanner(){
 }
 
 /* toolbar */
-function exec(cmd){ document.getElementById('canvas').focus(); document.execCommand(cmd,false,null); }
-function applyBlockStyle(tag){ if(!tag) return; document.getElementById('canvas').focus(); document.execCommand('formatBlock',false,tag); }
+function exec(cmd){ restoreCursor(); document.execCommand(cmd,false,null); }
+function applyBlockStyle(tag){ if(!tag) return; restoreCursor(); document.execCommand('formatBlock',false,tag); }
 function wrapCode(){
   const sel=window.getSelection(); if(!sel.rangeCount||sel.isCollapsed) return;
   const r=sel.getRangeAt(0), text=r.toString();
@@ -1150,7 +1175,6 @@ function wrapCode(){
 
 /* insert blocks */
 function insertBlock(type){
-  const cv=document.getElementById('canvas'); cv.focus();
   const map={
     h2:'<h2>New Heading</h2>',
     h3:'<h3>New Sub-heading</h3>',
@@ -1161,6 +1185,7 @@ function insertBlock(type){
     hr:'<hr />',
     cta:'<div class="highlight-box"><p><strong>Call to action</strong></p><p>Supporting text goes here.</p></div>',
   };
+  restoreCursor(); // put cursor back where user left it
   document.execCommand('insertHTML',false,map[type]||'');
   markDirty(); buildOutline();
 }
@@ -1209,7 +1234,10 @@ function setStatus(s){
 }
 
 /* keyboard shortcuts */
-document.getElementById('canvas').addEventListener('input',markDirty);
+document.getElementById('canvas').addEventListener('input',  markDirty);
+document.getElementById('canvas').addEventListener('keyup',  saveCursor);
+document.getElementById('canvas').addEventListener('mouseup', saveCursor);
+document.getElementById('canvas').addEventListener('click',  saveCursor);
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='s'&&document.getElementById('view-editor').classList.contains('active')){
     e.preventDefault(); saveAndPublish();
@@ -1302,12 +1330,12 @@ function insertTableFromDlg(){
 
   html += '</tbody></table><p><br></p>';
 
-  const cv = document.getElementById('canvas');
-  cv.focus();
+  restoreCursor(); // insert at cursor position, not top of document
   document.execCommand('insertHTML', false, html);
   markDirty();
 
   // Attach table cell listeners
+  const cv = document.getElementById('canvas');
   cv.querySelectorAll('table td, table th').forEach(attachCellListeners);
   toast('Table inserted — click any cell to edit');
 }
