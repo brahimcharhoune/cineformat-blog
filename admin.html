@@ -1037,24 +1037,32 @@ function buildPostHtml(){
 }
 
 /* ── Push a single file via Netlify Function (token stays server-side) ── */
-async function ghPushFile(cfg, path, content, commitMsg){
-  // All pushes go through /.netlify/functions/gh-push
-  // The BLOG_TOKEN env variable is read there — never touches the browser
-  const res = await fetch('/.netlify/functions/gh-push', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      owner:   cfg.owner,
-      repo:    cfg.repo,
-      branch:  cfg.branch,
-      path:    path,
-      content: btoa(unescape(encodeURIComponent(content))),
-      message: commitMsg
-    })
-  });
-  const data = await res.json().catch(()=>({}));
+async function ghPushFile(cfg, filePath, content, commitMsg){
+  console.log('[ghPush] pushing to:', filePath, 'repo:', cfg.owner+'/'+cfg.repo, 'branch:', cfg.branch);
+  let res;
+  try {
+    res = await fetch('/.netlify/functions/gh-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        owner:   cfg.owner,
+        repo:    cfg.repo,
+        branch:  cfg.branch,
+        path:    filePath,
+        content: btoa(unescape(encodeURIComponent(content))),
+        message: commitMsg
+      })
+    });
+  } catch(networkErr) {
+    throw new Error('Network error — Netlify function unreachable: ' + networkErr.message);
+  }
+  const rawText = await res.text();
+  console.log('[ghPush] status:', res.status, 'response:', rawText);
+  let data = {};
+  try { data = JSON.parse(rawText); } catch {}
   if(!res.ok){
-    throw new Error(data.error || 'Push failed — '+res.status);
+    const msg = data.error || data.message || rawText.slice(0,200) || 'HTTP '+res.status;
+    throw new Error('(' + res.status + ') ' + msg);
   }
   return data;
 }
@@ -1105,10 +1113,16 @@ async function saveAndPublish(){
     toast('🚀 Pushed to GitHub — Netlify is deploying!');
     setTimeout(()=>setDeployStatus(null,''), 6000);
   } catch(e){
-    setDeployStatus('fail','Push failed');
-    toast('GitHub push failed: '+e.message, true);
-    // Offer download as fallback
-    setTimeout(()=>{ if(confirm('Push failed. Download the file instead?')) downloadHtml(); }, 300);
+    setDeployStatus('fail','Push failed: '+e.message);
+    console.error('[saveAndPublish] error:', e);
+    // Show full error in toast + confirm dialog so user can see exactly what went wrong
+    const detail = e.message || 'Unknown error';
+    toast('Push failed: '+detail, true);
+    setTimeout(()=>{ if(confirm('Push failed.
+
+Error: '+detail+'
+
+Download the file instead?')) downloadHtml(); }, 300);
   } finally{
     btn.disabled = false; btn.textContent = origText;
   }
